@@ -14,9 +14,6 @@ This project aims to develop a web application that predicts mental health condi
 6. [Model](#model)
 7. [Web Application](#web-application)
 8. [Future Improvements](#future-improvements)
-9. [Contributing](#contributing)
-10. [License](#license)
-
 ## Features
 
 - User-friendly web interface for data input
@@ -112,14 +109,3 @@ The Flask web application provides an intuitive interface for users to input the
 - Enhance the user interface with additional visualizations
 - Develop a mobile application version
 - Integrate with wearable devices for real-time data collection
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-Answer from Perplexity: pplx.ai/share
