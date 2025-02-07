@@ -1,3 +1,4 @@
+import joblib
 import os
 import pandas as pd
 import numpy as np
@@ -84,6 +85,9 @@ def train_and_evaluate_models(X, y, preprocessor):
         if metric.startswith('test_'):
             print(f"{metric[5:]}: {scores.mean():.4f} (+/- {scores.std() * 2:.4f})")
     
+    # Fit the model on the entire dataset
+    model.fit(X, y)
+    
     return model
 
 # Main execution
@@ -108,6 +112,57 @@ if __name__ == "__main__":
             model = train_and_evaluate_models(X, y, preprocessor)
             
             print("Model training complete.")
+            
+            # Create 'model' directory if it doesn't exist
+            os.makedirs('model', exist_ok=True)
+
+            # Save the trained model
+            model_path = 'model/mental_health_model.pkl'
+            joblib.dump(model, model_path, protocol=4)
+            print(f"Model saved to {model_path}")
+
+            # Save feature names
+            feature_names = list(X.columns)
+            joblib.dump(feature_names, 'model/feature_names.pkl')
+            print("Feature names saved.")
+
+# Prediction function
+def predict_mental_health(data):
+    try:
+        model_path = 'model/mental_health_model.pkl'
+        feature_names_path = 'model/feature_names.pkl'
+        
+        if not os.path.exists(model_path) or not os.path.exists(feature_names_path):
+            raise FileNotFoundError("Model or feature names file not found.")
+        
+        pipeline = joblib.load(model_path)
+        feature_names = joblib.load(feature_names_path)
+        
+        # Preprocess input data
+        X = pd.DataFrame([data])
+        X = X[feature_names]  # Ensure correct feature order
+        
+        print("Model type:", type(pipeline))
+        print("Pipeline steps:", pipeline.named_steps)
+        print("Input data shape:", X.shape)
+        print("Input data columns:", X.columns)
+        
+        # Make prediction
+        prediction = pipeline.predict(X)[0]
+        is_depressive = bool(prediction)
+        
+        result = {
+            'depressiveness': is_depressive,
+            'phq_severity': 'Moderate to Severe' if data['phq_score'] >= 10 else 'Mild',
+            'gad_severity': 'Moderate to Severe' if data['gad_score'] >= 10 else 'Mild',
+            'sleep_concern': 'Yes' if data['epworth_score'] >= 10 else 'No'
+        }
+        
+        return result
+    
+    except Exception as e:
+        print(f"Prediction error: {str(e)}")
+        raise
 
 
 
